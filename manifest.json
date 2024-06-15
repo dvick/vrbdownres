@@ -1,0 +1,16 @@
+{
+	"manifest_version": 3,
+	"name": "VR Bangers Download Restorer",
+	"version": "1.0",
+	"description": "Restores downloads on vrbangers.com",
+	"icons": {
+		"48": "icons/48.png",
+		"192": "icons/192.png"
+	},
+	"content_scripts": [
+		{
+			"matches": ["https://vrbangers.com/video/*"],
+			"js": ["content.js"]
+		}
+	]
+}
