@@ -12,5 +12,10 @@
 			"matches": ["https://vrbangers.com/video/*"],
 			"js": ["content.js"]
 		}
-	]
+	],
+	"browser_specific_settings": {
+		"gecko": {
+			"id": "{fbe65127-cd2c-4076-a307-bba60fc3d002}"
+		}
+	}
 }
