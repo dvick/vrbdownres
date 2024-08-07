@@ -18,7 +18,8 @@
 		{
 			"matches": [
 				"https://vrbangers.com/*",
-				"https://vrconk.com/*"
+				"https://vrconk.com/*",
+				"https://blowvr.com/*"
 			],
 			"js": ["content.js"],
 			"all_frames": true

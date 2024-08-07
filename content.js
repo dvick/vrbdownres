@@ -1,16 +1,30 @@
+const classMap = {
+    'vrconk.com': 'video-download-button__activator app-link app-link__button app-link__button--block --single-video',
+    'blowvr.com': 'video-download-button__activator app-link app-link--uppercase app-link__button app-link__button--block'
+};
+classMap['vrbangers.com'] = classMap['vrconk.com'];
+
+const dataAttrMap = {
+    'vrbangers.com': 'd6d564ee',
+    'vrconk.com': '37da09dc',
+    'blowvr.com': '5074a90a'
+};
+
+const innerMap = {
+    'vrbangers.com': 'Download',
+    'vrconk.com': 'Download',
+    'blowvr.com': 'Download<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 24" fill="none" class="app-icon" data-v-67c9ab81="" data-v-5074a90a="" data-testid="" style="--icon-width: 24; --icon-height: 24;"><path d="M12.5 15L12.8536 15.3536L12.5 15.7071L12.1464 15.3536L12.5 15ZM18.8536 9.35355L12.8536 15.3536L12.1464 14.6464L18.1464 8.64645L18.8536 9.35355ZM12.1464 15.3536L6.14645 9.35355L6.85355 8.64645L12.8536 14.6464L12.1464 15.3536Z"></path></svg>'
+}
+
 function doInjectButton() {
     if (document.querySelector('.video-download-button__activator')) {
         return;
     }
     const button = document.createElement('button');
-    button.className = 'video-download-button__activator app-link app-link__button app-link__button--block --single-video';
-    if (window.location.hostname === 'vrconk.com') {
-        button.setAttribute('data-v-37da09dc', '');
-    } else {
-        button.setAttribute('data-v-d6d564ee', '');
-    }
-    button.innerText = 'Download';
-    const appMenuActivator = document.querySelector('.single-video-info__download-button > .app-menu__activator');
+    button.className = classMap[window.location.hostname];
+    button.setAttribute('data-v-' + dataAttrMap[window.location.hostname], '');
+    button.innerHTML = innerMap[window.location.hostname];
+    const appMenuActivator = document.querySelector('.video-download-button > .app-menu__activator');
     appMenuActivator.appendChild(button);
 }
 
