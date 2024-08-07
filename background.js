@@ -4,4 +4,9 @@ if (typeof browser === 'undefined') {
 
 browser.webNavigation.onHistoryStateUpdated.addListener((details) => {
     browser.tabs.sendMessage(details.tabId, 'injectButton', {frameId: details.frameId});
-}, {url: [{hostEquals: "vrbangers.com", pathPrefix: "/video/"}]});
+}, {
+    url: [
+        {hostEquals: 'vrbangers.com', pathPrefix: '/video/'},
+        {hostEquals: 'vrconk.com', pathPrefix: '/video/'}
+    ]
+});
