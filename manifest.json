@@ -16,12 +16,21 @@
 	},
 	"content_scripts": [
 		{
-			"matches": [
-				"https://vrbangers.com/*",
-				"https://vrconk.com/*",
-				"https://blowvr.com/*"
-			],
+			"matches": ["https://vrbangers.com/*"],
 			"js": ["content.js"],
+			"css": ["css/vrbangers.css"],
+			"all_frames": true
+		},
+		{
+			"matches": ["https://vrconk.com/*"],
+			"js": ["content.js"],
+			"css": ["css/vrconk.css"],
+			"all_frames": true
+		},
+		{
+			"matches": ["https://blowvr.com/*"],
+			"js": ["content.js"],
+			"css": ["css/blowvr.css"],
 			"all_frames": true
 		}
 	],
