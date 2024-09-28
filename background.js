@@ -8,6 +8,7 @@ browser.webNavigation.onHistoryStateUpdated.addListener((details) => {
     url: [
         {hostEquals: 'vrbangers.com', pathPrefix: '/video/'},
         {hostEquals: 'vrconk.com', pathPrefix: '/video/'},
-        {hostEquals: 'blowvr.com', pathPrefix: '/video/'}
+        {hostEquals: 'blowvr.com', pathPrefix: '/video/'},
+        {hostEquals: 'vrbtrans.com', pathPrefix: '/video/'}
     ]
 });
