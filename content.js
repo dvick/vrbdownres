@@ -1,38 +1,81 @@
-const classMap = {
-    'vrconk.com': 'video-download-button__activator app-link app-link__button app-link__button--block --single-video',
-    'blowvr.com': 'video-download-button__activator app-link app-link--uppercase app-link__button app-link__button--block'
-};
-//don't have these, copying vrconk:
-classMap['vrbangers.com'] = classMap['vrconk.com'];
-classMap['vrbtrans.com'] = classMap['vrconk.com'];
+let downloads = [];
 
-const dataAttrMap = {
-    'vrbangers.com': 'd6d564ee',
-    'vrconk.com': '37da09dc',
-    'blowvr.com': '5074a90a'
-};
-dataAttrMap['vrbtrans.com'] = dataAttrMap['vrbangers.com']; //don't have, copying vrbangers
+function downloadButtonClick(event) {
+    event.stopPropagation();
+    const existingMenu = document.getElementById('downloadDropdown');
+    if (existingMenu) {
+        existingMenu.parentElement.removeChild(existingMenu);
+        return;
+    }
+    const menu = document.createElement('div');
+    menu.id = 'downloadDropdown';
+    menu.className = 'app-menu__content';
+    menu.style.top = 'calc(100% + 10px)';
+    menu.style.right = '0';
+    const menuList = document.createElement('div');
+    menuList.className = 'app-header-account-menu__list';
+    menuList.setAttribute('data-v-65275bed', '');
+    const linksDiv = document.createElement('div');
+    linksDiv.setAttribute('data-v-65275bed', '');
+    for (const download of downloads) {
+        const link = document.createElement('a');
+        link.className = 'app-header-account-menu__list-item font-body app-link';
+        link.setAttribute('data-v-65275bed', '');
+        link.href = download.url;
+        const span = document.createElement('span');
+        span.className = 'app-link__container';
+        span.innerText = `${download.label} (${download.size})`;
+        link.appendChild(span);
+        linksDiv.appendChild(link);
+    }
+    menuList.appendChild(linksDiv);
+    menu.appendChild(menuList);
+    const actions = document.querySelector('.single-video-actions__comment-trailer');
+    actions.appendChild(menu);
+}
 
-const innerMap = {
-    'vrbangers.com': 'Download',
-    'vrconk.com': 'Download',
-    'blowvr.com': 'Download<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 24" fill="none" class="app-icon" data-v-67c9ab81="" data-v-5074a90a="" data-testid="" style="--icon-width: 24; --icon-height: 24;"><path d="M12.5 15L12.8536 15.3536L12.5 15.7071L12.1464 15.3536L12.5 15ZM18.8536 9.35355L12.8536 15.3536L12.1464 14.6464L18.1464 8.64645L18.8536 9.35355ZM12.1464 15.3536L6.14645 9.35355L6.85355 8.64645L12.8536 14.6464L12.1464 15.3536Z"></path></svg>',
-    'vrbtrans.com': 'Download'
+function documentClick() {
+    const existingMenu = document.getElementById('downloadDropdown');
+    if (existingMenu) {
+        existingMenu.parentElement.removeChild(existingMenu);
+    }
 }
 
 function doInjectButton() {
-    if (document.querySelector('.video-download-button__activator')) {
-        return;
+    const existingButton = document.getElementById('downloadButton');
+    if (existingButton) {
+        existingButton.parentElement.removeChild(existingButton);
     }
-    const button = document.createElement('button');
-    button.className = classMap[window.location.hostname];
-    button.setAttribute('data-v-' + dataAttrMap[window.location.hostname], '');
-    button.innerHTML = innerMap[window.location.hostname];
-    const appMenuActivator = document.querySelector('.video-download-button > .app-menu__activator');
-    appMenuActivator.appendChild(button);
+    const actions = document.querySelector('.single-video-actions__comment-trailer');
+    actions.style.position = 'relative';
+    const button = actions.querySelector('.single-video-actions__button__comment').cloneNode(true);
+    button.id = 'downloadButton';
+    button.children[0].innerText = 'Download';
+    button.addEventListener('click', downloadButtonClick);
+    actions.appendChild(button);
+}
+
+function getDownloads() {
+    const token = document.cookie.match('(?:^|; )atoken=([^;]+)')[1];
+    const videoId = window.location.pathname.match('^/video/([^/]+)')[1];
+    fetch(`https://content.${window.location.hostname}/api/content/v1/videos/${videoId}`, {
+        headers: {
+            'Authorization': 'Bearer ' + token
+        }
+    }).then(resp => {
+        if (!resp.ok)
+            throw new Error('HTTP error: ' + resp.status);
+        return resp.json();
+    }).then(resp => {
+        if (resp.status.code !== 1)
+            throw new Error(resp.status.message);
+        downloads = resp.data.item.downLoadVideoListForFront;
+    });
 }
 
 function injectButton() {
+    getDownloads();
+
     const preview = document.querySelector('.single-video-poster__preview');
 
     if (preview.classList.contains('--loading')) {
@@ -87,6 +130,8 @@ browser.runtime.onMessage.addListener((message) => {
         observer.observe(target, {childList: true});
     }
 });
+
+document.addEventListener('click', documentClick);
 
 if (window.location.pathname.startsWith('/video/')) {
     injectButton();

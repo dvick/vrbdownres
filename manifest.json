@@ -1,7 +1,7 @@
 {
 	"manifest_version": 3,
 	"name": "VR Bangers Download Restorer",
-	"version": "1.4",
+	"version": "2.0",
 	"description": "Restores downloads on VR Bangers websites",
 	"icons": {
 		"48": "icons/48.png",
@@ -16,21 +16,14 @@
 	},
 	"content_scripts": [
 		{
-			"matches": ["*://vrbangers.com/*", "*://vrbtrans.com/*"],
+			"matches": [
+				"*://vrbangers.com/*",
+				"*://vrbtrans.com/*",
+				"*://vrbgay.com/*",
+				"*://vrconk.com/*",
+				"*://blowvr.com/*"
+			],
 			"js": ["content.js"],
-			"css": ["css/vrbangers.css"],
-			"all_frames": true
-		},
-		{
-			"matches": ["*://vrconk.com/*"],
-			"js": ["content.js"],
-			"css": ["css/vrconk.css"],
-			"all_frames": true
-		},
-		{
-			"matches": ["*://blowvr.com/*"],
-			"js": ["content.js"],
-			"css": ["css/blowvr.css"],
 			"all_frames": true
 		}
 	],
