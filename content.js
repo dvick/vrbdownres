@@ -7,6 +7,14 @@ function downloadButtonClick(event) {
         existingMenu.parentElement.removeChild(existingMenu);
         return;
     }
+    const accountMenu = document.querySelector('.app-header-account-menu__wrapper');
+    let dataAttr;
+    for (const attr of accountMenu.attributes) {
+        if (attr.name.startsWith('data-v-')) {
+            dataAttr = attr.name;
+            break;
+        }
+    }
     const menu = document.createElement('div');
     menu.id = 'downloadDropdown';
     menu.className = 'app-menu__content';
@@ -14,13 +22,16 @@ function downloadButtonClick(event) {
     menu.style.right = '0';
     const menuList = document.createElement('div');
     menuList.className = 'app-header-account-menu__list';
-    menuList.setAttribute('data-v-65275bed', '');
+    if (dataAttr)
+        menuList.setAttribute(dataAttr, '');
     const linksDiv = document.createElement('div');
-    linksDiv.setAttribute('data-v-65275bed', '');
+    if (dataAttr)
+        linksDiv.setAttribute(dataAttr, '');
     for (const download of downloads) {
         const link = document.createElement('a');
         link.className = 'app-header-account-menu__list-item font-body app-link';
-        link.setAttribute('data-v-65275bed', '');
+        if (dataAttr)
+            link.setAttribute(dataAttr, '');
         link.href = download.url;
         const span = document.createElement('span');
         span.className = 'app-link__container';
