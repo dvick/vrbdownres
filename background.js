@@ -10,6 +10,7 @@ browser.webNavigation.onHistoryStateUpdated.addListener((details) => {
         {hostEquals: 'vrbtrans.com', pathPrefix: '/video/'},
         {hostEquals: 'vrbgay.com', pathPrefix: '/video/'},
         {hostEquals: 'vrconk.com', pathPrefix: '/video/'},
-        {hostEquals: 'blowvr.com', pathPrefix: '/video/'}
+        {hostEquals: 'blowvr.com', pathPrefix: '/video/'},
+        {hostEquals: 'arporn.com', pathPrefix: '/video/'}
     ]
 });
