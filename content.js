@@ -1,11 +1,14 @@
-let downloads = [];
+let downloads = [], curVideoId;
 
-function downloadButtonClick(event) {
+async function downloadButtonClick(event) {
     event.stopPropagation();
     const existingMenu = document.getElementById('downloadDropdown');
     if (existingMenu) {
         existingMenu.parentElement.removeChild(existingMenu);
         return;
+    }
+    if (getVideoId() != curVideoId) {
+        await getDownloads();
     }
     const accountMenu = document.querySelector('.app-header-account-menu__wrapper');
     let dataAttr;
@@ -52,11 +55,9 @@ function documentClick() {
     }
 }
 
-function doInjectButton() {
-    const existingButton = document.getElementById('downloadButton');
-    if (existingButton) {
-        existingButton.parentElement.removeChild(existingButton);
-    }
+function injectButton() {
+    if (document.getElementById('downloadButton'))
+        return;
     const actions = document.querySelector('.single-video-actions__comment-trailer');
     actions.style.position = 'relative';
     const button = actions.querySelector('.single-video-actions__button__comment').cloneNode(true);
@@ -64,12 +65,26 @@ function doInjectButton() {
     button.children[0].innerText = 'Download';
     button.addEventListener('click', downloadButtonClick);
     actions.appendChild(button);
+    new MutationObserver((mutations) => {
+        for (const mutation of mutations) {
+            for (const node of mutation.removedNodes) {
+                if (node == button) {
+                    actions.appendChild(button);
+                    return;
+                }
+            }
+        }
+    }).observe(actions, {childList: true});
+}
+
+function getVideoId() {
+    return window.location.pathname.match('^/video/([^/]+)')[1];
 }
 
 function getDownloads() {
     const token = document.cookie.match('(?:^|; )atoken=([^;]+)')[1];
-    const videoId = window.location.pathname.match('^/video/([^/]+)')[1];
-    fetch(`https://content.${window.location.hostname}/api/content/v1/videos/${videoId}`, {
+    const videoId = getVideoId();
+    return fetch(`https://content.${window.location.hostname}/api/content/v1/videos/${videoId}`, {
         headers: {
             'Authorization': 'Bearer ' + token
         }
@@ -81,28 +96,8 @@ function getDownloads() {
         if (resp.status.code !== 1)
             throw new Error(resp.status.message);
         downloads = resp.data.item.downLoadVideoListForFront;
+        curVideoId = videoId;
     });
-}
-
-function injectButton() {
-    getDownloads();
-
-    const preview = document.querySelector('.single-video-poster__preview');
-
-    if (preview.classList.contains('--loading')) {
-        const observer = new MutationObserver((mutations, observer) => {
-            if (!preview.classList.contains('--loading')) {
-                observer.disconnect();
-                doInjectButton();
-            }
-        });
-        observer.observe(preview, {
-            attributes: true,
-            attributeFilter: ['class']
-        });
-    } else {
-        doInjectButton();
-    }
 }
 
 if (typeof browser === 'undefined') {
@@ -111,34 +106,17 @@ if (typeof browser === 'undefined') {
 
 browser.runtime.onMessage.addListener((message) => {
     if (message === 'injectButton') {
-        let target, callback;
-        if (document.querySelector('.dashboard__container')) {
-            target = document.getElementById('__nuxt');
-            callback = (mutations, observer) => {
-                for (const mutation of mutations) {
-                    for (const node of mutation.addedNodes) {
-                        if (node.id === '__layout') {
-                            observer.disconnect();
-                            injectButton();
-                            return;
-                        }
-                    }
-                }
-            };
-        } else {
-            target = document.querySelector('main.app-content');
-            callback = (mutations, observer) => {
-                for (const mutation of mutations) {
-                    if (mutation.addedNodes.length > 0) {
+        new MutationObserver((mutations, observer) => {
+            for (const mutation of mutations) {
+                for (const node of mutation.addedNodes) {
+                    if (node.parentNode.querySelector('.single-video-actions__comment-trailer')) {
                         observer.disconnect();
                         injectButton();
                         return;
                     }
                 }
-            };
-        }
-        const observer = new MutationObserver(callback);
-        observer.observe(target, {childList: true});
+            }
+        }).observe(document.body, {childList: true, subtree: true});
     }
 });
 
